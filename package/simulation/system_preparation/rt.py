@@ -27,6 +27,9 @@ class prepare:
             res4 = ss[1][1]
             input_ss = f'''bond PROT.{res1}.SG PROT.{res2}.SG
 bond PROT.{res3}.SG PROT.{res4}.SG'''
+
+        else:
+			input_ss = f'''check PROT'''
     ####################################################
 
     def complex_in(self, ions_rand):
