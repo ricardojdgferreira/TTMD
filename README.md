@@ -1,6 +1,10 @@
 # TTMD
 Python code to run Thermal Titration Molecular Dynamics (TTMD) simulations
 
+# TTMD updated for NAMD3 MD simulations
+1) NAMD3 is now the default MD engine (path can be specified in config_rt.dat)
+2) Disulfide bridges are now passed to tleal (cysteines must be identified as CYX)
+
 Reference publications:  
   1) **"Qualitative Estimation of Protein-Ligand Complex Stability through Thermal Titration Molecular Dynamics (TTMD) Simulations."**  
   Pavan M., Menin S., Bassani D., Sturlese M., Moro S. (published in *Journal of Chemical Information and Modeling*)  
@@ -30,21 +34,3 @@ To run the code:
 3. run the code (`python3 ttmd.py [options]`, detailed options can be displayed by executing `python3 ttmd.py --help`)
 
 An example system is provided in the **test** directory to test the code.
-
-Recent applications of the TTMD code:  
-
-  **"PROTAC-Design-Evaluator (PRODE) : An Advanced Method for in-silico PROTAC design"**  
-  A S Ben Geoffrey, Deepak Agrawal, Nagaraj M Kulkarni, Rajappan Vetrivel, Kishan Gurram  (published in *ACS Omega*)    
-  https://doi.org/10.1021/acsomega.3c07318  
-  **"A comprehensive study of SARS-CoV-2 main protease (Mpro) inhibitor-resistant mutants selected in a VSV-based system"**
-  F Costacurta et al. (published in *PLOS Pathogens*)  
-  https://doi.org/10.1371/journal.ppat.1012522  
-  **"Structural Investigations on 2-Amidobenzimidazole Derivatives as New Inhibitors of Protein Kinase CK1 Delta"**
-  S. Calenda et al. (published in *Pharmaceuticals*)
-  https://doi.org/10.3390/ph17040468  
-  **"A second life for the crystallographic structure of Berenil-dodecanucleotide complex: a computational revisitation thirty years after its publication"**  
-  G. Novello et al. (preprint in *ResearchSquare*)  
-  https://doi.org/10.21203/rs.3.rs-4269844/v1  
-  **"Molecular Glue-Design-Evaluator (MOLDE): An Advanced Method for In-Silico Molecular Glue Design"**  
-  A S Ben Geoffrey, Deepak Agrawal, Nagaraj M Kulkarni, G Manonmani (preprint in *Biorxiv*)  
-  https://doi.org/10.1101/2024.08.06.606937
