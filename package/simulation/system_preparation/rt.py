@@ -7,13 +7,13 @@ class prepare:
     def __init__(self, dict):
         self.__dict__ = dict
         self.store_dict()
-        
+
     ## ADDED: enabling S-S bonds to tleap ##############
+	ss_bond = []
     def store_dict(self):
         my_data = self.__dict__
         ss_bond.append(my_data['ss_bond'])
 
-	ss_bond = []
     # function to define any disulfide bridge that may exist
     def complex_in(self, ions_rand):
         ss = ss_bond[0]
