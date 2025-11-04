@@ -23,31 +23,71 @@ class equil2:
         if not os.path.exists('equil2.dcd') or check == False:
             out = self.output['eq1']
 
+        # ADDED: configuration for NAMD ######
             with open("equil2.npt", 'w') as f:
-                f.write(f"""parmfile {self.solvprmtop}
-coordinates {self.solvpdb}
-binCoordinates {out['coor']}
-binVelocities {out['vel']}
-extendedSystem {out['xsc']}
-temperature {self.T_start}
-timestep {self.timestep}
-thermostat on
-thermostatTemperature {self.T_start}
-thermostatDamping 0.1
-barostat on
-barostatPressure 1.01325
-run {self.eq2len}ns
-restart {self.resume}
-PME on
-cutoff 9.0
-switching on
-switchDistance 7.5
-atomRestraint "protein and backbone or resname LIG" setpoints 5@0
-trajectoryFile equil2.dcd
-trajectoryPeriod {self.dcdfreq}""")
+                f.write(f"""# configuration file for equil2
+amber                  on
+parmfile               {self.solvprmtop}
+coordinates            {out['coor']}
+velocities             {out['vel']}
+extendedSystem         {out['xsc']}
+exclude                scaled1-4
+oneFourScaling         0.833333
+scnb                   2
+switching              on
+switchdist             10.5
+cutoff                 12.0
+pairlistdist           14.0
+outputName             equil2
+dcdUnitCell            yes
+dcdFreq                {self.dcdfreq}
+restartfreq            500
+outputEnergies         500
+outputPressure         500
+outputtiming           500
+XSTFreq                500
+binaryoutput           yes
+binaryrestart          yes
+hgroupcutoff           2.8
+wrapAll                off
+wrapWater              on
+langevin               on
+langevinTemp           {self.T_start}
+langevinDamping        1
+langevinHydrogen       no
+langevinPiston         on
+langevinPistonTarget   1.01325
+langevinPistonPeriod   200
+langevinPistonDecay    100
+langevinPistonTemp     {self.T_start}
+useflexiblecell        yes
+useConstantRatio       yes
+ExcludeFromPressureFile {self.solvrest}
+ExcludeFromPressureCol B
+useGroupPressure       yes
+PME                    yes
+PMEGridSpacing         1.0
+PMETolerance           10e-6
+PMEInterpOrder         4
+timestep               {self.timestep}
+fullelectfrequency     2
+nonbondedfreq          1
+rigidbonds             all
+rigidtolerance         0.00001
+rigiditerations        400
+stepspercycle          10
+splitpatch             hydrogen
+margin                 2
+fixedAtoms             on
+fixedAtomsForces       on 
+fixedAtomsFile         {self.solvrest}
+fixedAtomsCol          B
+run                    {self.eq2len}
+""")
 
-            os.system(f"acemd3 --device {self.device} equil2.npt")
-
+            os.system(f"{self.engine} +p{self.n_procs} +setcpuaffinity +devices {self.device} equil2.conf | tee equil2.log | grep 'ENERGY'")
+        #################################
+        
         if os.path.exists('wrap.dcd'):
             try:
                 check = self.check_trj_len.check(self.solvprmtop, 'wrap.dcd', self.eq2len)
