@@ -15,7 +15,8 @@ class equil1:
         os.chdir('equil1')
         
         try:
-            check = self.check_trj_len.check(self.solvprmtop, 'equil1.dcd', self.eq1len)
+            eq1 = int(self.eq1len) / int(self.dcdfreq)
+            check = self.check_trj_len.check(self.solvprmtop, 'equil1.dcd', eq1)
         except Exception:
             check = False
 
