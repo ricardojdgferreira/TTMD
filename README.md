@@ -1,7 +1,9 @@
 # TTMD (updated for NAMD3 MD simulations)
 Python code to run Thermal Titration Molecular Dynamics (TTMD) simulations with the following modifications:
   1) NAMD3 is now the default MD engine (path can be specified in config_rt.dat)
-  2) Disulfide bridges are now passed to tleal (cysteines must be identified as CYX)
+  2) disulfide bridges are now passed to tleap (cysteines must be identified as CYX)
+  3) BioPython is now preferred for saving protein .pdb files (thus avoiding some problems with RDKit)
+  4) minor adjustements to the code
 
 Reference publications:  
   1) **"Qualitative Estimation of Protein-Ligand Complex Stability through Thermal Titration Molecular Dynamics (TTMD) Simulations."**  
