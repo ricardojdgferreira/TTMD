@@ -111,35 +111,67 @@ class simulation:
         coor = self.output[dict]['coor']
         vel = self.output[dict]['vel']
 
+        # ADDED: configuration needed to work with NAMD ##
         if i == 0:
-            input_files = f'''extendedSystem {xsc}'''
+            input_files = f'''extendedSystem     {xsc}
+temperature        {temp}'''
 
         else:
-            input_files = f'''extendedSystem {xsc}
-binCoordinates {coor}
-binVelocities {vel}'''
+            input_files = f'''extendedSystem     {xsc}
+binCoordinates     {coor}
+binVelocities      {vel}'''
 
-        with open("run.nvt", 'w') as f:
-                f.write(f"""
-parmfile {self.solvprmtop}
-coordinates {self.solvpdb}
-temperature {temp}
+        with open("run.conf", 'w') as f:
+                f.write(f"""# configuration for main run
+amber              on
+parmfile           {self.solvprmtop}
+coordinates        {self.solvpdb}
 {input_files}
-timestep {self.timestep}
-thermostat on
-thermostatTemperature {temp}
-thermostatDamping 0.1
-run {length}ns
-restart {self.resume}
-PME on
-cutoff 9.0
-switching on
-switchDistance 7.5
-trajectoryFile run_{temp}.dcd
-trajectoryPeriod {self.dcdfreq}
+exclude            scaled1-4
+oneFourScaling     0.833333
+scnb               2
+switching          on
+switchdist         10.5
+cutoff             12.0
+pairlistdist       14.0
+dcdUnitCell        yes
+dcdFreq            {self.dcdfreq}
+restartfreq        500
+outputEnergies     500
+outputPressure     500
+outputtiming       500
+XSTFreq            500
+binaryoutput       yes
+binaryrestart      yes
+hgroupcutoff       2.8
+wrapAll            off
+wrapWater          on
+langevin           on
+langevinTemp       {temp}
+langevinDamping    1
+langevinHydrogen   no
+PME                yes
+PMEGridSpacing     1.0
+PMETolerance       10e-6
+PMEInterpOrder     4
+timestep           {self.timestep}
+fullelectfrequency 2
+nonbondedfreq      1
+rigidbonds         all
+rigidtolerance     0.00001
+rigiditerations    400
+stepspercycle      10
+splitpatch         hydrogen
+margin             2
+useflexiblecell    no
+useConstantRatio   no
+outputname         output
+dcdfile            run_{temp}.dcd
+run                {length}
 """)
 
-        os.system(f"acemd3 --device {self.device} run.nvt")
+        os.system(f"{self.engine} +p{self.n_procs} +setcpuaffinity +devices {self.device} run.conf | tee run.log | grep 'ENERGY'")
+        ##################################################
 
         os.system(f"cp output.coor output_files/output_{temp}.coor")
         os.system(f"cp output.vel output_files/output_{temp}.vel")
