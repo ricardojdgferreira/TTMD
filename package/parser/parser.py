@@ -201,7 +201,6 @@ class input_vars:
         if 'smooth' in keys:
             self.smooth = vars['smooth']
 
-
         if 'device' in keys:
             if not type(vars['device']) == int or not type(vars['device']) == list:
                 try:
@@ -225,6 +224,11 @@ class input_vars:
 
         if 'n_reps' in keys:
             self.n_reps = vars['n_reps']
+
+        # ADDED: enabling S-S bonding #####
+        if 'ss_bond' in keys:
+            self.ss_bond = vars['ss_bond']
+        ###################################
 
         if 'vmd_path' in keys:
             #check if provided vmd path is correct: if not, search for local installation of vmd and use that instead
@@ -259,8 +263,21 @@ class input_vars:
                 print(f'\nFound existing installation of VMD at {vmd_installed_path}')
                 print(f'Using {vmd_installed_path}\n')
                 self.vmd_path = vmd_installed_path
-
-
+                
+            # ADDED: engine for NAMD3 on config_rt.dat #########
+            if 'engine' in keys:
+                #check if provided NAMD3 path is correct
+                engine_check = True
+                engine_path = vars['engine']
+                #control first if namd3 path is provided
+                try:
+                    self.engine_path = os.path.abspath(engine_path)
+                except Exception:
+                    print('\nNAMD3 path missing! (check your config_params)\n')
+                    engine_check = False
+                self.engine = engine_path
+            #####################################################
+        
         if self.method == 'ps':
             if 'namd_path' in keys:
                 #check if provided namd path is correct: if not, search for local installation of namd and use that instead
@@ -518,6 +535,17 @@ def cmd_parser():
         dest='temp_ramp'
         )
 
+    # ADDED: enabling S-S bonding ##
+    setup_group.add_argument(
+        '-ss', 
+        '--ss_bond', 
+        type=str, 
+        help='Specify any disulfide bridge. Format: [[res1, res2], [res3, res4]] (default=None)', 
+        metavar='', 
+        dest='ss_bond'
+        )
+    #################################
+
     setup_group.add_argument(
         '-stop', 
         '--score_stop', 
@@ -606,6 +634,16 @@ def cmd_parser():
         metavar='', 
         dest='vmd_path',
         )
+
+    # ADDED: NAMD as engine on config_rt.dat ####
+    setup_group.add_argument(
+        '-engine', 
+        type=str, 
+        help='NAMD3 installation path (default=[None](autodetected)', 
+        metavar='', 
+        dest='engine_path',
+        )
+    #############################################
 
     setup_group.add_argument(
         '-n', 
