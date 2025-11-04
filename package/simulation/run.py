@@ -72,8 +72,9 @@ class simulation:
 
         else:
             print(f'    run_{temp}.dcd found')
-            
-            check = self.check_trj_len.check(self.solvprmtop, f'run_{temp}.dcd', length)
+
+            lgt = int(length) / int(self.dcdfreq)
+            check = self.check_trj_len.check(self.solvprmtop, f'run_{temp}.dcd', gt)
             
             if check == False:
                 if self.resume == True:
@@ -189,7 +190,8 @@ run                {length}
             self.wrapping.run(self.solvpdb, trj, wrap_trj)
 
         else:
-            check = self.check_trj_len.check(self.solvprmtop, wrap_trj, length)
+            lgt = int(length) / int(self.dcdfreq)
+            check = self.check_trj_len.check(self.solvprmtop, wrap_trj, lgt)
             if check == False:
                 self.wrapping.run(self.solvprmtop, self.solvpdb, trj, wrap_trj)
 
@@ -244,7 +246,8 @@ run                {length}
             check = False
 
         else:
-            check = self.check_trj_len.check(topology, finaltrj, length)
+            lgt = int(length) / int(self.dcdfreq)
+            check = self.check_trj_len.check(topology, finaltrj, lgt)
         
         self.wrapping.merge_trj(topology, trj_list, finaltrj, remove=False)
         
