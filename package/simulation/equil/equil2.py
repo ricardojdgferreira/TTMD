@@ -16,7 +16,8 @@ class equil2:
         
         if os.path.exists('equil2.dcd'):
             try:
-                check = self.check_trj_len.check(self.solvprmtop, 'equil2.dcd', self.eq2len)
+                eq2 = int(self.eq1len) / int(self.dcdfreq)
+                check = self.check_trj_len.check(self.solvprmtop, 'equil2.dcd', eq2)
             except Exception:
                 check = False
 
