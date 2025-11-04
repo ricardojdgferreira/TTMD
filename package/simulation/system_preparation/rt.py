@@ -3,12 +3,31 @@ from rdkit import Chem
 import MDAnalysis as mda
 
 
-
 class prepare:
     def __init__(self, dict):
         self.__dict__ = dict
+        self.store_dict()
         
+    ## ADDED: enabling S-S bonds to tleap ##############
+    def store_dict(self):
+        my_data = self.__dict__
+        ss_bond.append(my_data['ss_bond'])
 
+    # function to define any disulfide bridge that may exist
+    def complex_in(self, ions_rand):
+        ss = ss_bond[0]
+        if len(ss) == 1:
+            res1 = ss[0]
+            res2 = ss[1]
+            input_ss = f'''bond PROT.{res1}.SG PROT.{res2}.SG'''
+        else:
+            res1 = ss[0][0]
+            res2 = ss[0][1]
+            res3 = ss[1][0]
+            res4 = ss[1][1]
+            input_ss = f'''bond PROT.{res1}.SG PROT.{res2}.SG
+bond PROT.{res3}.SG PROT.{res4}.SG'''
+    ####################################################
 
     def complex_in(self, ions_rand):
         complexin = f'''source leaprc.protein.ff14SB
@@ -18,6 +37,7 @@ loadamberparams ligand.frcmod
 loadoff atomic_ions.lib
 loadamberparams frcmod.ionsjc_tip3p
 PROT = loadpdb {self.receptor}
+{input_ss}
 LIG = loadmol2 ligand_charged.mol2
 COMPL = combine{{PROT LIG}}
 saveAmberParm LIG ligand.prmtop ligand.inpcrd
@@ -153,6 +173,31 @@ exit""")
         solvprmtop = os.path.abspath('solv.prmtop')
 
 
+        ## ADDED: generate restrained PDB file for NAMD ###
+        parser = PDBParser(QUIET=True)
+        structure = parser.get_structure("system", solvpdb)
+        target_atoms = {"CA", "C", "O", "N"}
+        water_residues = {"HOH", "WAT", "TIP3"}
+        for model in structure:
+            for chain in model:
+                for residue in chain:
+                    resname = residue.get_resname()
+                    for atom in residue:
+                        if resname not in water_residues and atom.get_name().strip() in target_atoms:
+                            atom.set_bfactor(1.00)
+                        elif resname == "LIG" and "H" not in atom.get_name():
+                            atom.set_bfactor(1.00)
+                        else:
+                            atom.set_bfactor(0.00)
+        output_filename = "solvrest.pdb"
+        output_path = os.path.abspath(output_filename)
+        io = PDBIO()
+        io.set_structure(structure)
+        io.save(output_path)
+        
+        solvrest = os.path.abspath('solvrest.pdb')
+        ####################################################
+        
         u = mda.Universe(self.receptor)
         sel = u.select_atoms('protein')
         with mda.Writer('dry_protein.pdb', sel.n_atoms) as W:
@@ -180,7 +225,8 @@ quit'''
         update = {
             'complprmtop': complprmtop,
             'solvpdb': solvpdb,
-            'solvprmtop': solvprmtop
+            'solvprmtop': solvprmtop,
+            'solvrest': solvrest
             }
 
         return update
