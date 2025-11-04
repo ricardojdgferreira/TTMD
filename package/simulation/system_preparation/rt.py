@@ -13,6 +13,7 @@ class prepare:
         my_data = self.__dict__
         ss_bond.append(my_data['ss_bond'])
 
+	ss_bond = []
     # function to define any disulfide bridge that may exist
     def complex_in(self, ions_rand):
         ss = ss_bond[0]
