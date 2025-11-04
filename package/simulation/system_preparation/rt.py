@@ -1,7 +1,7 @@
 import os
 from rdkit import Chem
 import MDAnalysis as mda
-
+from Bio.PDB import PDBParser, PDBIO
 
 class prepare:
     def __init__(self, dict):
