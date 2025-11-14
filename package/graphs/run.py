@@ -19,8 +19,8 @@ class graphs:
 
         self.time_list = [0]
 
-        for i in range(1, self.tot_frames + 1):
-            self.time_list.append(round(i * self.cfactor, 2))
+        for i in range(1, self.tot_frames / 26000):
+            self.time_list.append(round(i, 2))
 
         self.xticks = []
         self.temperature_list = [self.T_start]
@@ -59,8 +59,8 @@ class graphs:
         
 
     def graphic_smooth(self, value_list, i):
-        self.tot_frames = int(self.check_trj_len.ns_to_frame(self.tot_len))
-        smooth = round(self.tot_frames / 1000 * i)
+        self.tot_frames = int(self.tot_len)
+        smooth = round(self.tot_frames / 26000 * i)
 
         if smooth != 0:
             smooth_sim = []
